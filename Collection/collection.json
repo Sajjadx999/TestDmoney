@@ -1,0 +1,795 @@
+{
+	"info": {
+		"_postman_id": "5a201d41-9594-4dde-ab56-c97d6a6b2f6d",
+		"name": "Test-dmoney",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38014443"
+	},
+	"item": [
+		{
+			"name": "User Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData=pm.response.json();\r",
+							"let token=jsonData.token;\r",
+							"\r",
+							"pm.collectionVariables.set(\"TOKEN\", token)\r",
+							"pm.environment.set(\"TOKEN\", token)\r",
+							"\r",
+							"\r",
+							"pm.test(\"check if user can logged in successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"Login successful\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"admin@roadtocareer.net\",\r\n    \"password\":\"1234\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/login",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login by Wrong creds",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if system works by inputs wrong password\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"Password incorrect\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"admin@roadtocareer.net\",\r\n    \"password\":\"12345\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/login",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if actual User shows properly\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User list\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/user/list",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User List check inputting wrong Action",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if actions is given\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.error.message).contains(\"GET /users/list Not Found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/users/list",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"users",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if user is found in dataase\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contain(\"User not found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/user/search/id/10510",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"search",
+						"id",
+						"10510"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search User inputting wrong parameter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if wrong path parameter is given\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User not found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/user/search/id/1051a",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"search",
+						"id",
+						"1051a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let randomid=_.random(10000000, 99999999);\r",
+							"let prefix=\"019\";\r",
+							"let phone_number=prefix+randomid\r",
+							"\r",
+							"console.log(\"phonenumber\");\r",
+							"pm.collectionVariables.set(\"UserNumber\", phone_number)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData=pm.response.json();\r",
+							"let userid=jsonData.user.id;\r",
+							"let username=jsonData.user.name;\r",
+							"let useremail=jsonData.user.email;\r",
+							"\r",
+							"pm.collectionVariables.set(\"USERID\", userid)\r",
+							"pm.collectionVariables.set(\"USERNAME\", username)\r",
+							"pm.collectionVariables.set(\"USEREMAIL\", useremail.toLowerCase())\r",
+							"\r",
+							"pm.environment.set(\"USERID\", userid)\r",
+							"pm.environment.set(\"USERNAME\", username)\r",
+							"pm.environment.set(\"USEREMAIL\", useremail.toLowerCase())\r",
+							"\r",
+							"\r",
+							"pm.test(\"check if new user created successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{UserNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/create",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User inputting wrong token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let randomid=_.random(10000000, 99999999);\r",
+							"let prefix=\"019\";\r",
+							"let phone_number=prefix+randomid\r",
+							"\r",
+							"console.log(\"phonenumber\");\r",
+							"pm.collectionVariables.set(\"UserNumber\", phone_number)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if wrong token is given\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"Token invalid!\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 403\", function () {\r",
+							"    pm.response.to.have.status(403);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "wrong bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{$randomFullName}}\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{UserNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/create",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if user updated successfully\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User updated\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \r\n        \"name\": \"Max Hoppe I elly\",\r\n        \"email\": \"Trenton_Braun0@gmail.com\",\r\n        \"password\": \"1234\",\r\n        \"phone_number\": \"01923076443\",\r\n        \"nid\": \"123456789\",\r\n        \"role\": \"Customer\"\r\n        \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/update/{{USERID}}",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"{{USERID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User by decreasing nid digit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if nid digits are less then 7\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contain(\"\\\"nid\\\" length must be at least 7 characters long\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \r\n        \"name\": \"Max Hoppe I elly\",\r\n        \"email\": \"Trenton_Braun0@gmail.com\",\r\n        \"password\": \"1234\",\r\n        \"phone_number\": \"01923076443\",\r\n        \"nid\": \"12345\",\r\n        \"role\": \"Customer\"\r\n        \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/update/{{USERID}}",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"{{USERID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User by Patch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if user updated successfully using Patch\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User updated successfully\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \r\n        \"email\": \"mtTrenton_Braun0@gmail.com\",\r\n        \"phone_number\": \"01923076440\",\r\n        \"role\": \"Agent\"\r\n        \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/update/{{USERID}}",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"{{USERID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User by giving wrong email partnerkey",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check if secrey key is given wrong\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"Secret auth key validation failure!\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY1}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \r\n        \"email\": \"mtTrenton_Braun0gmailcom\",\r\n        \"phone_number\": \"01o\",\r\n        \"role\": \"Agent and Customer1\"\r\n        \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/user/update/{{USERID}}",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"{{USERID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Your test name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).contains(\"User not found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer {{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "{{PARTNERKEY}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/user/delete/10510",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"user",
+						"delete",
+						"10510"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "TOKEN",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiYWRtaW5Acm9hZHRvY2FyZWVyLm5ldCIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTcyNTI5ODM1NiwiZXhwIjoxNzI1MzAxOTU2fQ.j4gQhEdpyBJxdYkX33JhGj-m_W38PyHtGSvyXyg9EYo"
+		},
+		{
+			"key": "BASEURL",
+			"value": "http://dmoney.roadtocareer.net",
+			"type": "string"
+		},
+		{
+			"key": "PARTNERKEY",
+			"value": "ROADTOSDET",
+			"type": "string"
+		},
+		{
+			"key": "UserNumber",
+			"value": "01973875122"
+		},
+		{
+			"key": "USERID",
+			"value": 10667
+		},
+		{
+			"key": "USERNAME",
+			"value": "Dale MacGyver"
+		},
+		{
+			"key": "USEREMAIL",
+			"value": "charlotte70@gmail.com"
+		}
+	]
+}
